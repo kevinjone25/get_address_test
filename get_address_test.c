@@ -7,6 +7,7 @@
 #include <pthread.h>
 
 __thread int shared_var;
+pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
 
 #define __NR_get_address 449
 #define MAX_BUF_SIZE 32
@@ -48,7 +49,9 @@ unsigned long int get_phys_addr(unsigned long int virt_addr) {
 }
 
 void get_thraed_seg(){
-
+    //lock the thread only one thread can ececute
+    pthread_mutex_lock( &mutex1);
+	
     struct ProcessSegments therad_segs;
     
     // at here to call syscall to get thread segemnet
@@ -74,7 +77,9 @@ void get_thraed_seg(){
     printf("local_var: %lx (%lx)\n", (unsigned long int) &local_var, get_phys_addr((unsigned long int) &local_var));
     //print the TLS address
     printf("TLS address: %p\n" , &shared_var);
-    
+    //unlock
+    pthread_mutex_unlock(&mutex1);
+	
     pthread_exit(NULL);
 }
 
