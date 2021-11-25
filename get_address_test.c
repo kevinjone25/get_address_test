@@ -56,8 +56,8 @@ void get_thread_seg(){
     
     // at here to call syscall to get thread segemnet
     // get thread tid
-    int tid = syscall(SYS_gettid);
-    
+    int tid = syscall(_NR__gettid);
+    thread_segs.pid = tid;
     // call get_address syscall
     syscall(__NR_get_address, BY_SEGMENT, (void *) &thread_segs);
     printf("%s: %lx-%lx (%lx-%lx)\n", thread_segs.code_seg.seg_name, thread_segs.code_seg.start_addr, thread_segs.code_seg.end_addr, get_phys_addr(thread_segs.code_seg.start_addr), get_phys_addr(thread_segs.code_seg.end_addr));
