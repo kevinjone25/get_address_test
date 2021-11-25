@@ -48,26 +48,26 @@ unsigned long int get_phys_addr(unsigned long int virt_addr) {
     return addr_info.phys_addr;
 }
 
-void get_thraed_seg(){
+void get_thread_seg(){
     //lock the thread only one thread can ececute
     pthread_mutex_lock( &mutex1);
 	
-    struct ProcessSegments therad_segs;
+    struct ProcessSegments thread_segs;
     
     // at here to call syscall to get thread segemnet
     // get thread tid
-    int tid = syscall(__NR_gettid);
+    int tid = syscall(SYS_gettid);
     
     // call get_address syscall
     syscall(__NR_get_address, BY_SEGMENT, (void *) &thread_segs);
     printf("%s: %lx-%lx (%lx-%lx)\n", thread_segs.code_seg.seg_name, thread_segs.code_seg.start_addr, thread_segs.code_seg.end_addr, get_phys_addr(thread_segs.code_seg.start_addr), get_phys_addr(thread_segs.code_seg.end_addr));
     printf("%s: %lx-%lx (%lx-%lx)\n", thread_segs.data_seg.seg_name, thread_segs.data_seg.start_addr, thread_segs.data_seg.end_addr, get_phys_addr(thread_segs.data_seg.start_addr), get_phys_addr(thread_segs.data_seg.end_addr));
-    printf("%s: %lx-%lx (%lx-%lx)\n", thread_segs.heap_seg.seg_name, thread_segs.heap_seg.start_addr, thread_segs.heap_seg.end_addr, get_phys_addr(thread_segs.heap_seg.start_addr), get_phys_addr(therad_segs.heap_seg.end_addr));
+    printf("%s: %lx-%lx (%lx-%lx)\n", thread_segs.heap_seg.seg_name, thread_segs.heap_seg.start_addr, thread_segs.heap_seg.end_addr, get_phys_addr(thread_segs.heap_seg.start_addr), get_phys_addr(thread_segs.heap_seg.end_addr));
     printf("%s: %lx-%lx (%lx-%lx)\n", thread_segs.stack_seg.seg_name, thread_segs.stack_seg.start_addr, thread_segs.stack_seg.end_addr, get_phys_addr(thread_segs.stack_seg.start_addr), get_phys_addr(thread_segs.stack_seg.end_addr));
     
     for (int i = 0; i < thread_segs.mmap_seg_count; i++) {
         if (strcmp(thread_segs.mmap_segs[i].lib_name, "NULL") != 0) {
-            printf("%s (%s): %lx-%lx (%lx-%lx)\n", thread_segs.mmap_segs[i].seg_name, thread_segs.mmap_segs[i].lib_name, thread_segs.mmap_segs[i].start_addr, thread_segs.mmap_segs[i].end_addr, get_phys_addr(thread_segs.mmap_segs[i].start_addr), get_phys_addr(therad_segs.mmap_segs[i].end_addr));
+            printf("%s (%s): %lx-%lx (%lx-%lx)\n", thread_segs.mmap_segs[i].seg_name, thread_segs.mmap_segs[i].lib_name, thread_segs.mmap_segs[i].start_addr, thread_segs.mmap_segs[i].end_addr, get_phys_addr(thread_segs.mmap_segs[i].start_addr), get_phys_addr(thread_segs.mmap_segs[i].end_addr));
         } else {            
             printf("%s: %lx-%lx (%lx-%lx)\n", thread_segs.mmap_segs[i].seg_name, thread_segs.mmap_segs[i].start_addr, thread_segs.mmap_segs[i].end_addr, get_phys_addr(thread_segs.mmap_segs[i].start_addr), get_phys_addr(thread_segs.mmap_segs[i].end_addr));
         }
@@ -80,7 +80,9 @@ void get_thraed_seg(){
     //unlock
     pthread_mutex_unlock(&mutex1);
 	
-    pthread_exit(NULL);
+    return;
+
+    
 }
 
 
