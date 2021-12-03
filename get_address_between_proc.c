@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <time.h>
 #include <string.h>
+#include <sys/wait.h>
 
 int shared_var = 0;
 
@@ -53,13 +54,14 @@ unsigned long int get_phys_addr(unsigned long int virt_addr)
 
 int main()
 {
-    int pid = fork();
-
+ int exit; 
+    pid_t pid = fork();
+	
     if (pid == 0)
     {
         struct ProcessSegments process_segs;
         process_segs.pid = getpid();
-
+	printf("%d",process_segs.pid);
         printf("\n--- CHILD PROCESS START ---\n");
 
         // call get_address syscall
@@ -83,11 +85,14 @@ int main()
 
         // print the shared var address
         printf("shared_var: %lx (%lx)\n", (unsigned long int)&shared_var, get_phys_addr((unsigned long int)&shared_var));
+        scanf("%d",&exit);
     }
     else if (pid > 0)
     {
+    	wait(&exit);
         struct ProcessSegments process_segs;
         process_segs.pid = getpid();
+        printf("%d",process_segs.pid);
 
         printf("\n--- PARENT PROCESS START ---\n");
 
